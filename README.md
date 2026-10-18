@@ -74,3 +74,52 @@ Or using setuptools install the project as package:
 
 ## Configuration Parameters
 > If your code is parameterized, you can explain the most important parameters here
+
+
+## Commands
+
+### uv (python package manager)
+
+Add package
+
+```shell
+uv add [package]
+```
+
+Create and sync virtual environment (.venv)
+
+```shell
+uv sync
+```
+
+### git
+
+Create local git environment for project
+
+```shell
+git clone https://github.com/malin810/master-thesis.git
+```
+
+Load changes from remote (github.com) to local machine (laptop, etc.)
+
+```shell
+git pull
+```
+
+Add code changes to commit
+
+```shell
+git add [file]
+```
+
+Create commit with message [message]
+
+```shell
+git commit -m "[message]"
+```
+
+Push changes from local (laptop, etc.) to remote (github.com)
+
+```shell
+git push
+```
