@@ -1,1 +1,2 @@
 from seizure_detection.app import main
+
