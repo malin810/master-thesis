@@ -4,3 +4,13 @@ data/raw/*
 !data/interim/README.md
 !data/processed/README.md
 !data/raw/README.md
+
+# Virtual environment
+.venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# C extensions
+*.so
