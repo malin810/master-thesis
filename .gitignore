@@ -14,3 +14,9 @@ __pycache__/
 
 # C extensions
 *.so
+
+# Notebook-Sicherungen (enthalten Ausgaben) und Modelle (InsightFace: nur Forschung)
+notebooks/*_backup*.ipynb
+models/buffalo_l/
+models/scrfd_34g/
+models/head_phd/
