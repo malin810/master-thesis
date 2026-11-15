@@ -30,3 +30,11 @@ explicit = true
 torch = [{ index = "pytorch-cu130" }]
 torchvision = [{ index = "pytorch-cu130" }]
 
+[dependency-groups]
+sam3 = [
+    "accelerate>=1.15.0",
+    "huggingface-hub>=2.4.0",
+    "pillow>=13.0.0",
+    "transformers>=5.23.0",
+]
+
