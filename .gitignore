@@ -20,3 +20,5 @@ notebooks/*_backup*.ipynb
 models/buffalo_l/
 models/scrfd_34g/
 models/head_phd/
+models/sam3/
+
