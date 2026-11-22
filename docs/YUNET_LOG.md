@@ -94,23 +94,47 @@ Längste Lücken:
 - In 205 der 3396 ungeschützten S/W-Frames gab es eine verworfene Box. Höchstens diese gehen auf den Filter zurück, die übrigen > 3000 sind echte Aussetzer.
 - **Sichtprüfung (22.11.2026):** Unter den roten (verworfenen) Boxen stecken **manchmal Gesichter oder Gesichtsteile**, aber **nicht in der Mitte** der Box. Die Boxen sind meist riesig. YuNet „spürt“ dort also ein Gesicht, lokalisiert es aber schlecht.
 
+### 2.3 v3: clip/full statt Verwerfen (22.11.2026)
+
+Nach der Sichtprüfung (Gesicht steckt manchmal in der zu großen Box, aber nicht in der Mitte) werden zu große Boxen nicht mehr verworfen, sondern wie bei SAM 3 behandelt:
+- **clip:** Liegt der Mittelpunkt einer normalen Gesichtsbox aus den letzten `MAX_GOOD_AGE = 50` Frames (2 s) in der großen Box, wird diese Gesichtsbox mit normalem Rand verpixelt. Sie zählt wie eine Erkennung (auch für hold/trail).
+- **full:** sonst wird die große Box ganz verpixelt (ohne Rand, nur in diesem Frame).
+
+Alles andere wie v2.
+
+**Test 2400–3000** (`VID_76_yunetviews_2400_3000_2026-11-22_14-44-41`), S/W: 40 Frames mit zu großer Box → clip 10, full 30. Frames ohne Verpixelung unverändert 30 (2684–2713): Dort meldet YuNet gar nichts, auch keine große Box.
+
+**Ganzes Video** (`VID_76_yunetviews_0_8759_2026-11-22_14-46-24`, 1216 s, 7,2 Frames/s):
+
+| | Farbe v2 → v3 | S/W v2 → v3 |
+|---|---|---|
+| **Frames ohne Verpixelung** | 43 → **43** | 3396 → **2938** (−458, 34 % der Frames) |
+| längste Lücke | 20 → 20 | 397 → **397** (05:13–05:29) |
+| ohne frische Erkennung | 1207 → 1207 | 6047 → 6047 |
+| Frames mit zu großer Box | 149 (clip 42, full 107) | 608 (clip 254, full 355) |
+| Status clip / nur full | 8 / 0 | 190 / 89 |
+
+S/W-Frames ohne Verpixelung pro Minute: 66, 30, 587, 395, 1001, 859 (v2: 66, 36, 931, 491, 1003, 869). clip/full hilft vor allem in Minute 3–4; in Minute 5–6 meldet YuNet meist gar nichts.
+
+Längste S/W-Lücken v3: 4334–4457, 5981–6095, 6163–6288, 6406–6657 (04:16–04:26), 7251–7422, **7842–8238 (05:13–05:29)**, 8262–8393, 8495–8616.
+
+Noch offen: Wie viel Überverpixelung erzeugt „full“? Im Kontrollvideo die magentafarbenen Boxen prüfen (Gesicht darin oder reine Fehlerkennung?).
+
 ---
 
 ## 3. Erkenntnisse
 
 - **Farbe:** YuNet ist brauchbar (0,5 % ungeschützt, Lücken ≤ 0,8 s), erzeugt aber viele Zusatzerkennungen (bis 6 pro Frame).
-- **S/W:** YuNet ist **ungeeignet**: 39 % der Frames ungeschützt, Lücken bis 16 s. Genau diese Ansicht löst SAM 3 vollständig.
-- Der Größenfilter verhindert massive Überverpixelung, verwirft aber auch schlecht lokalisierte echte Treffer. Einfaches Verwerfen ist daher für den Datenschutz nicht die beste Lösung.
+- **S/W:** YuNet ist **ungeeignet**: 39 % (v2) bzw. 34 % (v3) der Frames ungeschützt, Lücken bis 16 s. Genau diese Ansicht löst SAM 3 vollständig.
+- Der Größenfilter verhindert massive Überverpixelung, verwirft aber auch schlecht lokalisierte echte Treffer. clip/full (v3) holt davon einen Teil zurück, die meisten Lücken sind aber Frames, in denen YuNet gar nichts meldet. Das kann keine Nachbearbeitung retten.
 - YuNet ist ca. 6-mal schneller als SAM 3 und braucht keine GPU (wichtig für den Klinik-PC).
 
 ---
 
 ## 4. Offene Punkte
 
-- [ ] Umgang mit zu großen Boxen verbessern, statt sie zu verwerfen. Möglichkeiten:
-  - auf die letzte gute Gesichtsbox (erweitert) zuschneiden, sonst ganz verpixeln (wie „clip“/„full“ bei SAM 3, `SAM3_LOG.md` 3.2 v3)
-  - ganz verpixeln (sicher, aber viel Überverpixelung)
-  - Filter pro Ansicht unterschiedlich einstellen
+- [x] Umgang mit zu großen Boxen: clip/full statt Verwerfen (v3, 2.3): S/W ohne Verpixelung 3396 → 2938
+- [ ] Kontrollvideo v3: magentafarbene full-Boxen prüfen (Gesicht darin oder Fehlerkennung?)
 - [ ] Kontrollvideo an den S/W-Lücken sichten (v. a. 05:13–05:29): Warum findet YuNet nichts (abgewandt, Profil, dunkel)?
 - [ ] Zusatzerkennungen in Farbe prüfen (linker Rand, oberer Rand): echte Personen oder Fehlerkennungen?
 - [ ] Ground-Truth-Frames gezielt aus den S/W-Lücken wählen (`Evaluation.ipynb`)
